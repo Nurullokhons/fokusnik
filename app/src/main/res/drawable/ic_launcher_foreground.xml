@@ -3,26 +3,28 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:fillColor="#00000000" android:strokeColor="#E7BD68" android:strokeWidth="1.6"
-        android:pathData="M10,10 L98,10 L98,98 L10,98 Z" />
-    <path android:fillColor="#E7BD68" android:pathData="M81,22 m-2,0 a2,2 0,1 0,4 0 a2,2 0,1 0,-4 0" />
-    <path android:fillColor="#E7BD68" android:pathData="M25,43 m-1.5,0 a1.5,1.5 0,1 0,3 0 a1.5,1.5 0,1 0,-3 0" />
-    <path android:fillColor="#E7BD68" android:pathData="M88,48 m-1.5,0 a1.5,1.5 0,1 0,3 0 a1.5,1.5 0,1 0,-3 0" />
-    <path android:fillColor="#E7BD68" android:pathData="M18,66 m-1,0 a1,1 0,1 0,2 0 a1,1 0,1 0,-2 0" />
-    <path android:fillColor="#15151A" android:strokeColor="#E7BD68" android:strokeWidth="1.4"
-        android:pathData="M18,70 C28,64 80,64 90,70 C92,72 90,77 86,78 L22,78 C18,77 16,73 18,70 Z" />
-    <path android:fillColor="#15151A" android:strokeColor="#D69B42" android:strokeWidth="1.2"
-        android:pathData="M29,71 L35,48 C36,44 41,42 54,42 C67,42 72,44 73,48 L79,71 Z" />
-    <path android:fillColor="#A92F36" android:pathData="M33,55 C45,58 63,58 75,55 L77,63 C63,66 45,66 31,63 Z" />
-    <path android:fillColor="#E7BD68" android:pathData="M32,64 C45,67 63,67 77,64 L78,66 C63,69 45,69 31,66 Z" />
-    <group android:rotation="-12" android:pivotX="64" android:pivotY="34">
-        <path android:fillColor="#FFF8E8" android:strokeColor="#E7BD68" android:strokeWidth="1.4"
-            android:pathData="M55,13 L78,13 L78,48 L55,48 Z" />
-        <path android:fillColor="#20202A" android:pathData="M59,18 L64,18 L64,22 L59,22 Z" />
-        <path android:fillColor="#20202A" android:pathData="M66.5,19 C63,24 61,27 66.5,32 C72,27 70,24 66.5,19 Z" />
-        <path android:fillColor="#20202A" android:pathData="M74,44 L69,44 L69,40 L74,40 Z" />
+    <!-- Minimal magician's hat -->
+    <path android:fillColor="#11131A" android:strokeColor="#E7BD68" android:strokeWidth="2"
+        android:pathData="M17,73 C28,66 80,66 91,73 C95,77 90,81 84,81 L24,81 C18,81 13,77 17,73 Z" />
+    <path android:fillColor="#15151B" android:strokeColor="#D9A84F" android:strokeWidth="1.6"
+        android:pathData="M32,73 L39,48 C41,43 46,41 54,41 C62,41 67,43 69,48 L76,73 Z" />
+    <path android:fillColor="#A82D36" android:pathData="M36,58 C46,61 62,61 72,58 L74,65 C62,68 46,68 34,65 Z" />
+    <path android:fillColor="#E7BD68" android:pathData="M21,74 C36,79 72,79 87,74 L88,77 C72,83 36,83 20,77 Z" />
+    <!-- Card -->
+    <group android:rotation="-12" android:pivotX="61" android:pivotY="36">
+        <path android:fillColor="#FFF4D8" android:strokeColor="#E7BD68" android:strokeWidth="1.5"
+            android:pathData="M52,15 L75,15 Q78,15 78,18 L78,49 Q78,52 75,52 L52,52 Q49,52 49,49 L49,18 Q49,15 52,15 Z" />
+        <path android:fillColor="#171820" android:pathData="M57,21 L62,21 L62,25 L57,25 Z" />
+        <path android:fillColor="#171820" android:pathData="M64,23 C58,29 59,33 64,37 C69,33 70,29 64,23 Z" />
+        <path android:fillColor="#171820" android:pathData="M73,47 L68,47 L68,43 L73,43 Z" />
     </group>
-    <path android:fillColor="#DCA85A" android:pathData="M24,18 C29,13 36,13 42,17 C47,20 50,26 53,30 L59,36 C61,38 59,42 56,41 L48,35 C45,39 42,39 39,36 L34,32 C31,35 27,33 26,30 C22,29 20,24 24,18 Z" />
-    <path android:fillColor="#F0C47A" android:pathData="M38,18 C42,18 46,22 49,27 L55,33 C57,35 55,38 53,37 L45,30 C42,27 39,24 36,24 Z" />
-    <path android:fillColor="#E7BD68" android:pathData="M52,10 L53.5,14 L57,15.5 L53.5,17 L52,21 L50.5,17 L47,15.5 L50.5,14 Z" />
+    <!-- Cuffed hand holding the card -->
+    <path android:fillColor="#E8B66B" android:pathData="M15,24 C20,17 29,13 37,15 C44,16 49,21 53,27 L58,32 C61,35 59,39 56,38 L49,33 C46,37 42,38 38,35 L32,31 C28,35 24,34 22,31 C16,31 12,28 15,24 Z" />
+    <path android:fillColor="#F7D18D" android:pathData="M34,17 C40,18 45,23 49,28 L54,33 C56,35 54,37 52,36 L44,29 C41,26 38,23 33,23 Z" />
+    <path android:fillColor="#20232B" android:pathData="M8,23 L18,19 L25,32 L17,39 L8,34 Z" />
+    <path android:fillColor="#F7E9D0" android:pathData="M16,35 L23,30 L27,35 L20,41 Z" />
+    <!-- Magic spark and curved trail -->
+    <path android:fillColor="#F4C96F" android:pathData="M88,22 L90,29 L97,31 L90,33 L88,40 L86,33 L79,31 L86,29 Z" />
+    <path android:fillColor="#E7BD68" android:pathData="M80,47 C89,42 91,37 91,34 C95,44 88,52 78,57 C73,60 70,63 68,67 C69,58 73,52 80,47 Z" />
+    <path android:fillColor="#E7BD68" android:pathData="M30,10 L31.5,14 L35,15.5 L31.5,17 L30,21 L28.5,17 L25,15.5 L28.5,14 Z" />
 </vector>
