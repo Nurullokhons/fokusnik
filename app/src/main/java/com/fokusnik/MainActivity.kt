@@ -12,7 +12,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import com.fokusnik.engine.MagicEngine
 import com.fokusnik.model.PlayingCard
 
@@ -50,16 +53,46 @@ private fun FokusnikApp() {
     var round by remember { mutableIntStateOf(1) }
     var piles by remember { mutableStateOf(emptyList<List<PlayingCard>>()) }
     var revealed by remember { mutableStateOf<PlayingCard?>(null) }
+    var selectedPile by remember { mutableStateOf<Int?>(null) }
+    var roundBanner by remember { mutableIntStateOf(0) }
 
     fun start() {
         deck = MagicEngine.newDeck()
         round = 1
         piles = emptyList()
         revealed = null
+        selectedPile = null
+        roundBanner = 0
         stage = Stage.INTRO
     }
 
-    BackHandler(enabled = stage != Stage.HOME) { stage = Stage.HOME }
+    LaunchedEffect(selectedPile) {
+        val chosen = selectedPile ?: return@LaunchedEffect
+        delay(700)
+        deck = MagicEngine.collect(piles, chosen)
+        if (round == 3) {
+            revealed = MagicEngine.reveal(deck)
+            stage = Stage.REVEAL
+        } else {
+            round += 1
+            piles = MagicEngine.dealIntoPiles(deck)
+            selectedPile = null
+            roundBanner = round
+        }
+    }
+
+    LaunchedEffect(roundBanner) {
+        if (roundBanner != 0) {
+            delay(1150)
+            roundBanner = 0
+        }
+    }
+
+    BackHandler(enabled = stage != Stage.HOME) {
+        selectedPile = null
+        roundBanner = 0
+        stage = Stage.HOME
+    }
 
     MaterialTheme(colorScheme = darkColorScheme(
         primary = Gold, background = Night, surface = Panel,
@@ -75,22 +108,23 @@ private fun FokusnikApp() {
             ) { current ->
                 when (current) {
                     Stage.HOME -> HomeScreen(onStart = ::start)
-                    Stage.INTRO -> IntroScreen(onContinue = {
+                    Stage.INTRO -> IntroScreen(deck = deck, onContinue = {
                         piles = MagicEngine.dealIntoPiles(deck)
                         stage = Stage.PILES
                     })
-                    Stage.PILES -> PilesScreen(piles, round) { chosen ->
-                        deck = MagicEngine.collect(piles, chosen)
-                        if (round == 3) {
-                            revealed = MagicEngine.reveal(deck)
-                            stage = Stage.REVEAL
-                        } else {
-                            round += 1
-                            piles = MagicEngine.dealIntoPiles(deck)
-                        }
-                    }
+                    Stage.PILES -> PilesScreen(
+                        piles = piles,
+                        round = round,
+                        selectedPile = selectedPile,
+                        interactionLocked = roundBanner != 0,
+                        onChoose = { chosen -> if (selectedPile == null && roundBanner == 0) selectedPile = chosen }
+                    )
                     Stage.REVEAL -> RevealScreen(revealed, onAgain = ::start)
                 }
+            }
+
+            if (roundBanner != 0) {
+                RoundAnnouncement(roundBanner)
             }
         }
     }
@@ -129,57 +163,136 @@ private fun HomeScreen(onStart: () -> Unit) {
 }
 
 @Composable
-private fun IntroScreen(onContinue: () -> Unit) {
+private fun IntroScreen(deck: List<PlayingCard>, onContinue: () -> Unit) {
     Column(
-        Modifier.fillMaxSize().padding(26.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("ПЕРВЫЙ ШАГ", color = Gold, fontSize = 12.sp, letterSpacing = 3.sp)
-        Spacer(Modifier.height(24.dp))
-        Text("Запомни одну карту", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(18.dp))
+        Text("ПЕРВЫЙ ШАГ", color = Gold, fontSize = 11.sp, letterSpacing = 3.sp)
+        Spacer(Modifier.height(8.dp))
+        Text("Выбери карту в уме", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(7.dp))
         Text(
-            "Сейчас перед тобой появятся 21 карта. Выбери любую одну, внимательно запомни её и никому не говори, какую именно.",
-            color = Muted, fontSize = 16.sp, lineHeight = 25.sp, textAlign = TextAlign.Center
+            "Внимательно посмотри на все 21 карты. Выбери одну и запомни её. Не нажимай на неё и никому не говори, какая это карта.",
+            color = Muted, fontSize = 13.sp, lineHeight = 19.sp, textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(30.dp))
-        Box(
-            Modifier.size(132.dp, 180.dp).border(1.dp, Gold, RoundedCornerShape(14.dp))
-                .background(Brush.linearGradient(listOf(Color(0xFF3C1D2A), Color(0xFF111722))), RoundedCornerShape(14.dp)),
-            contentAlignment = Alignment.Center
-        ) { Text("♠", color = Gold, fontSize = 76.sp) }
-        Spacer(Modifier.height(36.dp))
+        Spacer(Modifier.height(13.dp))
+        Column(
+            Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(7.dp)
+        ) {
+            deck.chunked(3).forEach { row ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    row.forEach { card ->
+                        Box(Modifier.weight(1f)) { FullCard(card) }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
         GoldButton("Я ЗАПОМНИЛ КАРТУ", onContinue)
+        Spacer(Modifier.height(5.dp))
+        Text("Карта должна оставаться только в твоей памяти", color = Muted, fontSize = 10.sp, textAlign = TextAlign.Center)
     }
 }
 
 @Composable
-private fun PilesScreen(piles: List<List<PlayingCard>>, round: Int, onChoose: (Int) -> Unit) {
+private fun FullCard(card: PlayingCard) {
+    val ink = if (card.suit.red) Color(0xFFD52F43) else Color(0xFF20232B)
+    Column(
+        Modifier.fillMaxWidth().height(67.dp)
+            .border(1.dp, Color(0xFFE2D8C8), RoundedCornerShape(8.dp))
+            .background(Brush.verticalGradient(listOf(Color(0xFFFFFDF7), Color(0xFFE9E0D0))), RoundedCornerShape(8.dp))
+            .padding(horizontal = 7.dp, vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(card.rank, color = ink, fontSize = 17.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 18.sp)
+        Text(card.suit.symbol, color = ink, fontSize = 25.sp, lineHeight = 25.sp)
+    }
+}
+
+@Composable
+private fun PilesScreen(
+    piles: List<List<PlayingCard>>,
+    round: Int,
+    selectedPile: Int?,
+    interactionLocked: Boolean,
+    onChoose: (Int) -> Unit
+) {
     Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 20.dp)) {
-        Text("РАУНД $round ИЗ 3", color = Gold, fontSize = 11.sp, letterSpacing = 3.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+        Text("РАУНД $round ИЗ 3", color = Gold, fontSize = 12.sp, letterSpacing = 3.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
         Spacer(Modifier.height(12.dp))
         Text("В какой стопке твоя карта?", color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         Text("Найди свою карту и нажми на соответствующую стопку.", color = Muted, fontSize = 13.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 18.dp))
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             piles.forEachIndexed { pileIndex, cards ->
+                val isSelected = selectedPile == pileIndex
+                val lift by androidx.compose.animation.core.animateDpAsState(
+                    targetValue = if (isSelected) (-18).dp else 0.dp,
+                    label = "pile-lift-$pileIndex"
+                )
                 Column(
-                    Modifier.weight(1f).fillMaxHeight()
-                        .border(1.dp, Gold.copy(alpha = .45f), RoundedCornerShape(12.dp))
-                        .background(Panel.copy(alpha = .8f), RoundedCornerShape(12.dp))
-                        .clickable { onChoose(pileIndex) }
+                    Modifier.weight(1f).fillMaxHeight().offset(y = lift)
+                        .border(
+                            width = if (isSelected) 2.dp else 1.dp,
+                            color = if (isSelected) Gold else Gold.copy(alpha = .45f),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .background(
+                            if (isSelected) Color(0xFF393020) else Panel.copy(alpha = .8f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .clickable(enabled = selectedPile == null && !interactionLocked) { onChoose(pileIndex) }
                         .padding(horizontal = 5.dp, vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(listOf("I", "II", "III")[pileIndex], color = Gold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     cards.forEach { MiniCard(it) }
-                    Text("ВЫБРАТЬ", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                    Text(
+                        if (isSelected) "ВЫБРАНА ✓" else "ВЫБРАТЬ",
+                        color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp
+                    )
                 }
             }
         }
         Spacer(Modifier.height(16.dp))
-        Text("Нажми на одну из трёх стопок", color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Text(
+            if (selectedPile != null) "Стопка выбрана..." else "Нажми на одну из трёх стопок",
+            color = if (selectedPile != null) Gold else Muted,
+            fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun RoundAnnouncement(round: Int) {
+    val scale by androidx.compose.animation.core.animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.55f, stiffness = 220f),
+        label = "round-announcement"
+    )
+    Box(
+        Modifier.fillMaxSize().background(Color.Black.copy(alpha = .84f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("✦", color = Gold, fontSize = 34.sp)
+            Spacer(Modifier.height(12.dp))
+            Text("РАУНД", color = Muted, fontSize = 16.sp, letterSpacing = 7.sp)
+            Text(
+                "$round",
+                color = Gold,
+                fontSize = 104.sp,
+                fontWeight = FontWeight.Black,
+                modifier = Modifier.scale(scale)
+            )
+            Spacer(Modifier.height(8.dp))
+            Text("СМОТРИ ВНИМАТЕЛЬНО", color = Color.White, fontSize = 11.sp, letterSpacing = 3.sp)
+            Spacer(Modifier.height(18.dp))
+            Text("✧     ✦     ✧", color = Gold.copy(alpha = .8f), fontSize = 22.sp)
+        }
     }
 }
 
