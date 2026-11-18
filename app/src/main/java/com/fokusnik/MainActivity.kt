@@ -123,92 +123,131 @@ private fun FokusnikApp() {
                 }
             }
 
-            if (roundBanner != 0) {
-                RoundAnnouncement(roundBanner)
-            }
+            if (roundBanner != 0) RoundAnnouncement(roundBanner)
         }
     }
 }
 
 @Composable
 private fun HomeScreen(onStart: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(horizontal = 26.dp, vertical = 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("✦", color = Gold, fontSize = 34.sp)
-        Text("ФОКУСНИК", color = Gold, fontSize = 34.sp, fontWeight = FontWeight.Black, letterSpacing = 5.sp)
-        Text("ИСКУССТВО НЕВОЗМОЖНОГО", color = Muted, fontSize = 10.sp, letterSpacing = 3.sp)
-        Spacer(Modifier.height(42.dp))
-        Box(
-            Modifier.size(190.dp, 250.dp).border(1.dp, Gold.copy(alpha = .65f), RoundedCornerShape(18.dp))
-                .background(Brush.linearGradient(listOf(Color(0xFF351A25), Color(0xFF10131C))), RoundedCornerShape(18.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("✧", color = Gold, fontSize = 38.sp)
-                Text("♠", color = Color.White, fontSize = 76.sp)
-                Text("21", color = Gold, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                Text("THE MAGIC TRICK", color = Muted, fontSize = 9.sp, letterSpacing = 2.sp)
+    BoxWithConstraints(Modifier.fillMaxSize().padding(22.dp)) {
+        val landscape = maxWidth > maxHeight
+        if (landscape) {
+            Row(
+                Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(34.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                MagicHatMark(Modifier.weight(1f).fillMaxHeight())
+                Column(
+                    Modifier.weight(1.25f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    HomeTitle()
+                    Spacer(Modifier.height(24.dp))
+                    GoldButton("НАЧАТЬ ФОКУС", onStart)
+                    Spacer(Modifier.height(12.dp))
+                    Text("Один выбор. Три раунда. Одна тайна.", color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center)
+                }
+            }
+        } else {
+            Column(
+                Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                HomeTitle()
+                Spacer(Modifier.height(30.dp))
+                MagicHatMark(Modifier.weight(0.9f).fillMaxWidth())
+                Spacer(Modifier.height(25.dp))
+                GoldButton("НАЧАТЬ ФОКУС", onStart)
+                Spacer(Modifier.height(12.dp))
+                Text("Один выбор. Три раунда. Одна тайна.", color = Muted, fontSize = 12.sp)
             }
         }
-        Spacer(Modifier.height(42.dp))
-        GoldButton("НАЧАТЬ ФОКУС", onStart)
-        Spacer(Modifier.height(14.dp))
-        Text("Один выбор. Три раунда. Одна тайна.", color = Muted, fontSize = 12.sp)
-        Spacer(Modifier.height(30.dp))
-        Text("21 КАРТА  •  3 СТОПКИ  •  1 СЕКРЕТ", color = Gold.copy(alpha = .75f), fontSize = 9.sp, letterSpacing = 1.5.sp)
+    }
+}
+
+@Composable
+private fun HomeTitle() {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("✦", color = Gold, fontSize = 30.sp)
+        Text("ФОКУСНИК", color = Gold, fontSize = 31.sp, fontWeight = FontWeight.Black, letterSpacing = 4.sp)
+        Text("ИСКУССТВО НЕВОЗМОЖНОГО", color = Muted, fontSize = 9.sp, letterSpacing = 2.sp)
+    }
+}
+
+@Composable
+private fun MagicHatMark(modifier: Modifier = Modifier) {
+    Box(
+        modifier.border(1.dp, Gold.copy(alpha = .65f), RoundedCornerShape(18.dp))
+            .background(Brush.linearGradient(listOf(Color(0xFF351A25), Color(0xFF10131C))), RoundedCornerShape(18.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Text("✧", color = Gold, fontSize = 32.sp)
+            Text("♠", color = Color.White, fontSize = 72.sp)
+            Text("21", color = Gold, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            Text("THE MAGIC TRICK", color = Muted, fontSize = 9.sp, letterSpacing = 2.sp)
+        }
     }
 }
 
 @Composable
 private fun IntroScreen(deck: List<PlayingCard>, onContinue: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("ПЕРВЫЙ ШАГ", color = Gold, fontSize = 11.sp, letterSpacing = 3.sp)
-        Spacer(Modifier.height(8.dp))
-        Text("Выбери карту в уме", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(7.dp))
-        Text(
-            "Внимательно посмотри на все 21 карты. Выбери одну и запомни её. Не нажимай на неё и никому не говори, какая это карта.",
-            color = Muted, fontSize = 13.sp, lineHeight = 19.sp, textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.height(13.dp))
-        Column(
-            Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(7.dp)
-        ) {
-            deck.chunked(3).forEach { row ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    row.forEach { card ->
-                        Box(Modifier.weight(1f)) { FullCard(card) }
+    BoxWithConstraints(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)) {
+        val landscape = maxWidth > maxHeight
+        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("ПЕРВЫЙ ШАГ", color = Gold, fontSize = 11.sp, letterSpacing = 3.sp)
+            Spacer(Modifier.height(5.dp))
+            Text(
+                "Выбери карту в уме",
+                color = Color.White,
+                fontSize = if (landscape) 21.sp else 25.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                "Внимательно посмотри на все 21 карты. Выбери одну и запомни её. Не нажимай на неё и никому не говори, какая это карта.",
+                color = Muted,
+                fontSize = if (landscape) 11.sp else 13.sp,
+                lineHeight = if (landscape) 15.sp else 19.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 5.dp, bottom = 8.dp)
+            )
+            Column(
+                Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(if (landscape) 5.dp else 7.dp)
+            ) {
+                deck.chunked(if (landscape) 7 else 3).forEach { row ->
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+                        row.forEach { card ->
+                            Box(Modifier.weight(1f)) { FullCard(card, compact = landscape) }
+                        }
                     }
                 }
             }
+            Spacer(Modifier.height(8.dp))
+            GoldButton("Я ЗАПОМНИЛ КАРТУ", onContinue)
+            Text("Карта должна остаться только в твоей памяти", color = Muted, fontSize = 9.sp, textAlign = TextAlign.Center)
         }
-        Spacer(Modifier.height(12.dp))
-        GoldButton("Я ЗАПОМНИЛ КАРТУ", onContinue)
-        Spacer(Modifier.height(5.dp))
-        Text("Карта должна оставаться только в твоей памяти", color = Muted, fontSize = 10.sp, textAlign = TextAlign.Center)
     }
 }
 
 @Composable
-private fun FullCard(card: PlayingCard) {
+private fun FullCard(card: PlayingCard, compact: Boolean) {
     val ink = if (card.suit.red) Color(0xFFD52F43) else Color(0xFF20232B)
     Column(
-        Modifier.fillMaxWidth().height(67.dp)
+        Modifier.fillMaxWidth().height(if (compact) 55.dp else 67.dp)
             .border(1.dp, Color(0xFFE2D8C8), RoundedCornerShape(8.dp))
             .background(Brush.verticalGradient(listOf(Color(0xFFFFFDF7), Color(0xFFE9E0D0))), RoundedCornerShape(8.dp))
-            .padding(horizontal = 7.dp, vertical = 4.dp),
+            .padding(horizontal = 5.dp, vertical = 3.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(card.rank, color = ink, fontSize = 17.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 18.sp)
-        Text(card.suit.symbol, color = ink, fontSize = 25.sp, lineHeight = 25.sp)
+        Text(card.rank, color = ink, fontSize = if (compact) 14.sp else 17.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 17.sp)
+        Text(card.suit.symbol, color = ink, fontSize = if (compact) 20.sp else 25.sp, lineHeight = 23.sp)
     }
 }
 
@@ -220,11 +259,11 @@ private fun PilesScreen(
     interactionLocked: Boolean,
     onChoose: (Int) -> Unit
 ) {
-    Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 20.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Text("РАУНД $round ИЗ 3", color = Gold, fontSize = 12.sp, letterSpacing = 3.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
-        Spacer(Modifier.height(12.dp))
-        Text("В какой стопке твоя карта?", color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-        Text("Найди свою карту и нажми на соответствующую стопку.", color = Muted, fontSize = 13.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 18.dp))
+        Spacer(Modifier.height(7.dp))
+        Text("В какой стопке твоя карта?", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Text("Найди свою карту и нажми на соответствующую стопку.", color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp, bottom = 10.dp))
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             piles.forEachIndexed { pileIndex, cards ->
                 val isSelected = selectedPile == pileIndex
@@ -239,29 +278,23 @@ private fun PilesScreen(
                             color = if (isSelected) Gold else Gold.copy(alpha = .45f),
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .background(
-                            if (isSelected) Color(0xFF393020) else Panel.copy(alpha = .8f),
-                            RoundedCornerShape(12.dp)
-                        )
+                        .background(if (isSelected) Color(0xFF393020) else Panel.copy(alpha = .8f), RoundedCornerShape(12.dp))
                         .clickable(enabled = selectedPile == null && !interactionLocked) { onChoose(pileIndex) }
-                        .padding(horizontal = 5.dp, vertical = 8.dp),
+                        .padding(horizontal = 5.dp, vertical = 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(listOf("I", "II", "III")[pileIndex], color = Gold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     cards.forEach { MiniCard(it) }
-                    Text(
-                        if (isSelected) "ВЫБРАНА ✓" else "ВЫБРАТЬ",
-                        color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp
-                    )
+                    Text(if (isSelected) "ВЫБРАНА ✓" else "ВЫБРАТЬ", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
                 }
             }
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             if (selectedPile != null) "Стопка выбрана..." else "Нажми на одну из трёх стопок",
             color = if (selectedPile != null) Gold else Muted,
-            fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
+            fontSize = 11.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -273,24 +306,14 @@ private fun RoundAnnouncement(round: Int) {
         animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.55f, stiffness = 220f),
         label = "round-announcement"
     )
-    Box(
-        Modifier.fillMaxSize().background(Color.Black.copy(alpha = .84f)),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = .84f)), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("✦", color = Gold, fontSize = 34.sp)
-            Spacer(Modifier.height(12.dp))
-            Text("РАУНД", color = Muted, fontSize = 16.sp, letterSpacing = 7.sp)
-            Text(
-                "$round",
-                color = Gold,
-                fontSize = 104.sp,
-                fontWeight = FontWeight.Black,
-                modifier = Modifier.scale(scale)
-            )
             Spacer(Modifier.height(8.dp))
+            Text("РАУНД", color = Muted, fontSize = 16.sp, letterSpacing = 7.sp)
+            Text("$round", color = Gold, fontSize = 96.sp, fontWeight = FontWeight.Black, modifier = Modifier.scale(scale))
             Text("СМОТРИ ВНИМАТЕЛЬНО", color = Color.White, fontSize = 11.sp, letterSpacing = 3.sp)
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(14.dp))
             Text("✧     ✦     ✧", color = Gold.copy(alpha = .8f), fontSize = 22.sp)
         }
     }
@@ -312,32 +335,52 @@ private fun ColumnScope.MiniCard(card: PlayingCard) {
 
 @Composable
 private fun RevealScreen(card: PlayingCard?, onAgain: () -> Unit) {
-    val scale by androidx.compose.animation.core.animateFloatAsState(targetValue = 1f, label = "reveal")
-    val ink = if (card?.suit?.red == true) Color(0xFFD52F43) else Color(0xFF171923)
-    Column(
-        Modifier.fillMaxSize().padding(26.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("ТАЙНА РАСКРЫТА", color = Gold, fontSize = 12.sp, letterSpacing = 4.sp)
-        Spacer(Modifier.height(18.dp))
-        Text("Твоя карта...", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(30.dp))
-        Box(
-            Modifier.scale(scale).size(205.dp, 290.dp).border(2.dp, Gold, RoundedCornerShape(18.dp))
-                .background(Brush.verticalGradient(listOf(Color(0xFFFFFDF7), Color(0xFFE9E0D0))), RoundedCornerShape(18.dp)).padding(14.dp)
-        ) {
-            if (card != null) {
-                Text(card.label, color = ink, fontSize = 27.sp, fontWeight = FontWeight.Bold)
-                Text(card.suit.symbol, color = ink, fontSize = 92.sp, modifier = Modifier.align(Alignment.Center))
-                Text(card.label, color = ink, fontSize = 27.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.BottomEnd))
+    BoxWithConstraints(Modifier.fillMaxSize().padding(18.dp)) {
+        val landscape = maxWidth > maxHeight
+        val ink = if (card?.suit?.red == true) Color(0xFFD52F43) else Color(0xFF171923)
+        if (landscape) {
+            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(30.dp), verticalAlignment = Alignment.CenterVertically) {
+                RevealCard(card, ink, Modifier.weight(1f).fillMaxHeight())
+                Column(Modifier.weight(1.2f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                    Text("ТАЙНА РАСКРЫТА", color = Gold, fontSize = 12.sp, letterSpacing = 4.sp)
+                    Spacer(Modifier.height(10.dp))
+                    Text("Твоя карта...", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.height(10.dp))
+                    Text("Совпала?", color = Gold, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Магия была рядом всё это время.", color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(22.dp))
+                    GoldButton("ПОВТОРИТЬ ФОКУС", onAgain)
+                }
+            }
+        } else {
+            Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                Text("ТАЙНА РАСКРЫТА", color = Gold, fontSize = 12.sp, letterSpacing = 4.sp)
+                Spacer(Modifier.height(12.dp))
+                Text("Твоя карта...", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(18.dp))
+                RevealCard(card, ink, Modifier.height(250.dp).width(178.dp))
+                Spacer(Modifier.height(22.dp))
+                Text("Совпала?", color = Gold, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                Text("Магия была рядом всё это время.", color = Muted, fontSize = 13.sp)
+                Spacer(Modifier.height(24.dp))
+                GoldButton("ПОВТОРИТЬ ФОКУС", onAgain)
             }
         }
-        Spacer(Modifier.height(32.dp))
-        Text("Совпала?", color = Gold, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-        Text("Магия была рядом всё это время.", color = Muted, fontSize = 13.sp)
-        Spacer(Modifier.height(34.dp))
-        GoldButton("ПОВТОРИТЬ ФОКУС", onAgain)
+    }
+}
+
+@Composable
+private fun RevealCard(card: PlayingCard?, ink: Color, modifier: Modifier = Modifier) {
+    val scale by androidx.compose.animation.core.animateFloatAsState(targetValue = 1f, label = "reveal")
+    Box(
+        modifier.scale(scale).border(2.dp, Gold, RoundedCornerShape(18.dp))
+            .background(Brush.verticalGradient(listOf(Color(0xFFFFFDF7), Color(0xFFE9E0D0))), RoundedCornerShape(18.dp)).padding(12.dp)
+    ) {
+        if (card != null) {
+            Text(card.label, color = ink, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(card.suit.symbol, color = ink, fontSize = 80.sp, modifier = Modifier.align(Alignment.Center))
+            Text(card.label, color = ink, fontSize = 24.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.BottomEnd))
+        }
     }
 }
 
@@ -345,10 +388,10 @@ private fun RevealScreen(card: PlayingCard?, onAgain: () -> Unit) {
 private fun GoldButton(label: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().height(56.dp),
+        modifier = Modifier.fillMaxWidth().height(54.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Gold, contentColor = Color(0xFF17120A))
     ) {
-        Text(label, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 1.2.sp)
+        Text(label, fontSize = 12.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 1.1.sp)
     }
 }
