@@ -325,15 +325,23 @@ private fun RoundAnnouncement(round: Int) {
 @Composable
 private fun ColumnScope.MiniCard(card: PlayingCard, landscape: Boolean) {
     val ink = if (card.suit.red) Color(0xFFD64A55) else Color(0xFF20232B)
-    Row(
+    Box(
         Modifier.weight(1f).fillMaxWidth().padding(vertical = 1.dp)
             .background(Color(0xFFF7F2E9), RoundedCornerShape(4.dp)).padding(horizontal = 3.dp, vertical = 1.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center
     ) {
-        Text(card.rank, color = ink, fontSize = if (landscape) 11.sp else 10.sp, fontWeight = FontWeight.Bold, lineHeight = 12.sp)
-        Spacer(Modifier.width(if (landscape) 3.dp else 1.dp))
-        Text(card.suit.symbol, color = ink, fontSize = if (landscape) 12.sp else 13.sp, lineHeight = 13.sp)
+        if (landscape) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                Text(card.rank, color = ink, fontSize = 11.sp, fontWeight = FontWeight.Bold, lineHeight = 12.sp)
+                Spacer(Modifier.width(3.dp))
+                Text(card.suit.symbol, color = ink, fontSize = 12.sp, lineHeight = 13.sp)
+            }
+        } else {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                Text(card.rank, color = ink, fontSize = 10.sp, fontWeight = FontWeight.Bold, lineHeight = 10.sp)
+                Text(card.suit.symbol, color = ink, fontSize = 13.sp, lineHeight = 13.sp)
+            }
+        }
     }
 }
 
