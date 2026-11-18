@@ -259,7 +259,9 @@ private fun PilesScreen(
     interactionLocked: Boolean,
     onChoose: (Int) -> Unit
 ) {
-    Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val landscape = maxWidth > maxHeight
+        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Text("РАУНД $round ИЗ 3", color = Gold, fontSize = 12.sp, letterSpacing = 3.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
         Spacer(Modifier.height(7.dp))
         Text("В какой стопке твоя карта?", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
@@ -285,7 +287,7 @@ private fun PilesScreen(
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(listOf("I", "II", "III")[pileIndex], color = Gold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    cards.forEach { MiniCard(it) }
+                    cards.forEach { MiniCard(it, landscape) }
                     Text(if (isSelected) "ВЫБРАНА ✓" else "ВЫБРАТЬ", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
                 }
             }
@@ -296,6 +298,7 @@ private fun PilesScreen(
             color = if (selectedPile != null) Gold else Muted,
             fontSize = 11.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
         )
+        }
     }
 }
 
@@ -320,16 +323,17 @@ private fun RoundAnnouncement(round: Int) {
 }
 
 @Composable
-private fun ColumnScope.MiniCard(card: PlayingCard) {
+private fun ColumnScope.MiniCard(card: PlayingCard, landscape: Boolean) {
     val ink = if (card.suit.red) Color(0xFFD64A55) else Color(0xFF20232B)
-    Column(
+    Row(
         Modifier.weight(1f).fillMaxWidth().padding(vertical = 1.dp)
-            .background(Color(0xFFF7F2E9), RoundedCornerShape(4.dp)).padding(2.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(Color(0xFFF7F2E9), RoundedCornerShape(4.dp)).padding(horizontal = 3.dp, vertical = 1.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(card.rank, color = ink, fontSize = 10.sp, fontWeight = FontWeight.Bold, lineHeight = 10.sp)
-        Text(card.suit.symbol, color = ink, fontSize = 13.sp, lineHeight = 13.sp)
+        Text(card.rank, color = ink, fontSize = if (landscape) 11.sp else 10.sp, fontWeight = FontWeight.Bold, lineHeight = 12.sp)
+        Spacer(Modifier.width(if (landscape) 3.dp else 1.dp))
+        Text(card.suit.symbol, color = ink, fontSize = if (landscape) 12.sp else 13.sp, lineHeight = 13.sp)
     }
 }
 
